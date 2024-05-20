@@ -34,6 +34,15 @@ pub mod ticket {
         //  - `title` that returns the `title` field.
         //  - `description` that returns the `description` field.
         //  - `status` that returns the `status` field.
+        pub fn status(self: Ticket) -> String {
+            return self.status;
+        }
+        pub fn title(self: Ticket) -> String {
+            return self.title;
+        }
+        pub fn description(self: Ticket) -> String {
+            return self.description;
+        }
     }
 }
 

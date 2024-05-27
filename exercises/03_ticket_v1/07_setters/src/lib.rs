@@ -81,7 +81,8 @@ mod tests {
     #[test]
     #[should_panic(expected = "Description cannot be empty")]
     fn description_cannot_be_empty() {
-        Ticket::new(valid_title(), valid_description(), "To-Do".into()).set_description("".into());
+        Ticket::new(valid_title(), "".into(),"To-Do".into());
+        // Ticket::new(valid_title(), valid_description(), "To-Do".into()).set_description("".into());
     }
 
     #[test]

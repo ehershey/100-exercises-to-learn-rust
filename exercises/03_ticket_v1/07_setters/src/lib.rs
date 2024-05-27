@@ -20,6 +20,7 @@ impl Ticket {
         self.title = title;
     }
     fn set_description(&mut self, description: String) {
+        println!("in set_description");
         if description.is_empty() {
             panic!("Description cannot be empty");
         }
@@ -36,6 +37,9 @@ impl Ticket {
     }
 
     pub fn new(title: String, description: String, status: String) -> Ticket {
+        if description.is_empty() {
+            panic!("Description cannot be empty");
+        }
         Ticket {
             title,
             description,
@@ -82,7 +86,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "Description cannot be empty")]
     fn description_cannot_be_empty() {
-        Ticket::new(valid_title(), "".into(),"To-Do".into());
+        Ticket::new(valid_title(), "".into(), "To-Do".into());
         // Ticket::new(valid_title(), valid_description(), "To-Do".into()).set_description("".into());
     }
 

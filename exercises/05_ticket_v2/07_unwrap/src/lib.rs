@@ -2,7 +2,19 @@
 //   When the description is invalid, instead, it should use a default description:
 //   "Description not provided".
 fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
-    todo!()
+    // match Ticket::new(title, description, status) {
+    // Ok(ticket) => return ticket,
+    // Err(err) => panic!("Error: {}", err),
+    // }
+    // if title.is_empty() {
+    // panic!("Title cannot be empty");
+    // }
+    if description.is_empty() || description.len() > 500 {
+        return Ticket::new(title, "Description not provided".into(), status)
+            .expect("Failed to create Ticket with generic description");
+    } else {
+        return Ticket::new(title, description, status).expect("Failed to create Ticket");
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]

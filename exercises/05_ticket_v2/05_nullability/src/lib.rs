@@ -1,19 +1,29 @@
 // TODO: Implement `Ticket::assigned_to` using `Option` as the return type.
 
-#[derive(Debug, PartialEq)]
+#[derive(PartialEq)]
 struct Ticket {
     title: String,
     description: String,
     status: Status,
 }
 
-#[derive(Debug, PartialEq)]
+// enum Option<T> {
+// String(T),
+// None,
+// }
+
+#[derive(PartialEq)]
 enum Status {
     ToDo,
     InProgress { assigned_to: String },
     Done,
 }
 
+// impl Option<&String> {
+// pub fn debug() -> String {
+// "asd".to_string()
+// }
+// }
 impl Ticket {
     pub fn new(title: String, description: String, status: Status) -> Ticket {
         if title.is_empty() {
@@ -36,7 +46,17 @@ impl Ticket {
         }
     }
     pub fn assigned_to(&self) -> Option<&String> {
-        todo!()
+        // let assigned_to = match &self.status {
+        match &self.status {
+            Status::InProgress { assigned_to } => Some(assigned_to),
+            _ => None,
+        }
+        // match assigned_to {
+        // Some(assigned_to) => assigned_to,
+        // None => None,
+        // }
+
+        // Some(&self.status.asigned_to? stack.pop()? + stack.pop()?)
     }
 }
 

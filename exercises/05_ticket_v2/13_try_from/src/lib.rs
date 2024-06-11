@@ -7,6 +7,33 @@ enum Status {
     InProgress,
     Done,
 }
+use std::convert;
+
+impl std::convert::TryFrom<&str> for Status {
+    type Error = String;
+    fn try_from(incoming: &str) -> Result<Self, Self::Error> {
+        match incoming.to_lowercase().as_str() {
+            "todo" => Ok(Status::ToDo),
+            "inprogress" => Ok(Status::InProgress),
+            "done" => Ok(Status::Done),
+            _ => {
+                panic!("Invalid status string in panic");
+            }
+        }
+    }
+}
+
+impl std::convert::TryFrom<String> for Status {
+    type Error = String;
+    fn try_from(incoming: String) -> Result<Self, Self::Error> {
+        match incoming.to_lowercase().as_str() {
+            "todo" => Ok(Status::ToDo),
+            "inprogress" => Ok(Status::InProgress),
+            "done" => Ok(Status::Done),
+            _ => Err("Invalid status string: {}\", incoming".into()),
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {

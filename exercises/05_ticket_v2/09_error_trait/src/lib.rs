@@ -2,7 +2,7 @@
 //  When implementing `Display`, you may want to use the `write!` macro from Rust's standard library.
 //  The docs for the `std::fmt` module are a good place to start and look for examples:
 //  https://doc.rust-lang.org/std/fmt/index.html#write
-
+#[derive(Debug)]
 enum TicketNewError {
     TitleError(String),
     DescriptionError(String),
@@ -43,21 +43,26 @@ use std::fmt;
 
 impl fmt::Display for TicketNewError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-        write!(f, "Title cannot be empty");
+        return match &self {
+            TicketNewError::TitleError(err) => write!(f, "{}", err),
+            TicketNewError::DescriptionError(_) => panic!("description error"),
+        };
+        // hardcoded works fine
+        // write!(f, "Title cannot be empty");
+        // // write!(f, "{:#?}", &self);
         Ok(())
     }
 }
 // use std::error;
 // asd
 
-
 impl std::error::Error for TicketNewError {}
 
-impl fmt::Debug for TicketNewError {
-    fn fmt(&self, formatstring: &mut fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-        Ok(())
-    }
-}
+// impl fmt::Debug for TicketNewError {
+// fn fmt(&self, formatstring: &mut fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+// Ok(())
+// }
+// }
 
 impl Ticket {
     pub fn new(
@@ -128,6 +133,11 @@ mod tests {
     fn display_is_correctly_implemented() {
         let ticket = Ticket::new("".into(), valid_description(), Status::ToDo);
         assert_eq!(format!("{}", ticket.unwrap_err()), "Title cannot be empty");
+        let long_title_ticket = Ticket::new(overly_long_title(), valid_description(), Status::ToDo);
+        assert_eq!(
+            format!("{}", long_title_ticket.unwrap_err()),
+            "Title cannot be longer than 50 bytes"
+        );
     }
 
     assert_impl_one!(TicketNewError: std::error::Error);

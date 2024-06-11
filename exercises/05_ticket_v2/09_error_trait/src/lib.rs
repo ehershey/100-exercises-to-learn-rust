@@ -13,7 +13,17 @@ enum TicketNewError {
 //   When the description is invalid, instead, it should use a default description:
 //   "Description not provided".
 fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
-    todo!()
+    match Ticket::new(title.clone(), description, status.clone()) {
+        Ok(ticket) => ticket,
+        //Err(err) => panic!("{:#?}", err),
+        Err(err) => match err {
+            TicketNewError::TitleError(err) => panic!("{:#?}", err),
+            TicketNewError::DescriptionError(_) => {
+                return Ticket::new(title, "Description not provided".into(), status)
+                    .expect("Unwrap ticket with overridden title")
+            }
+        },
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -28,6 +38,25 @@ enum Status {
     ToDo,
     InProgress { assigned_to: String },
     Done,
+}
+use std::fmt;
+
+impl fmt::Display for TicketNewError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, "Title cannot be empty");
+        Ok(())
+    }
+}
+// use std::error;
+// asd
+
+
+impl std::error::Error for TicketNewError {}
+
+impl fmt::Debug for TicketNewError {
+    fn fmt(&self, formatstring: &mut fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        Ok(())
+    }
 }
 
 impl Ticket {

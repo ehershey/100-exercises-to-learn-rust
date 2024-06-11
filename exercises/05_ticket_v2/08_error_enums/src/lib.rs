@@ -26,7 +26,7 @@ fn easy_ticket(title: String, description: String, status: Status) -> Ticket {
         //Err(err) => panic!("{:#?}", err),
         Err(err) => match err {
             TicketNewError::Title(err) => panic!("{:#?}", err),
-            TicketNewError::Description(string) => {
+            TicketNewError::Description(_) => {
                 return Ticket::new(title, "Description not provided".into(), status)
                     .expect("Unwrap ticket with overridden title")
             }

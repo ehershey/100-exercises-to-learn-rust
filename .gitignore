@@ -2,3 +2,4 @@ target/
 exercises/progress.db
 exercises/progress.db.bak
 **/.DS_Store
+**/rusty-tags.vi

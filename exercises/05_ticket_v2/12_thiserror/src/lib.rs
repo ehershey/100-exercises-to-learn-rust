@@ -2,8 +2,9 @@
 //   We've changed the enum variants to be more specific, thus removing the need for storing
 //   a `String` field into each variant.
 //   You'll also have to add `thiserror` as a dependency in the `Cargo.toml` file.
-
-#[derive(Debug, thiserror::Error)]
+// extern crate thiserror;
+use thiserror::Error;
+#[derive(Debug, Error)]
 enum TicketNewError {
     #[error("Title cannot be empty")]
     TitleCannotBeEmpty,

@@ -13,6 +13,7 @@ mod status;
 // TODO: Add a new error variant to `TicketNewError` for when the status string is invalid.
 //   When calling `source` on an error of that variant, it should return a `ParseStatusError` rather than `None`.
 
+// use thiserror;
 #[derive(Debug, thiserror::Error)]
 pub enum TicketNewError {
     #[error("Title cannot be empty")]
@@ -23,7 +24,23 @@ pub enum TicketNewError {
     DescriptionCannotBeEmpty,
     #[error("Description cannot be longer than 500 bytes")]
     DescriptionTooLong,
+    #[error("`invalid` is not a valid status. Use one of: ToDo, InProgress, Done")]
+    ParseStatusErrorOnTicket { source: ParseStatusError },
 }
+
+#[derive(Debug, thiserror::Error)]
+struct ParseStatusError {}
+impl std::fmt::Display for ParseStatusError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> Result<(), std::fmt::Error> {
+        write!(f, "Invalid status");
+        Ok(())
+    }
+}
+// impl std::error::Error for TicketNewError {
+// fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+// Some(&self)
+// }
+// }
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct Ticket {
@@ -49,10 +66,20 @@ impl Ticket {
 
         // TODO: Parse the status string into a `Status` enum.
 
+        let status_obj = match status.as_str() {
+            "Done" => Status::Done,
+            "ToDo" => Status::ToDo,
+            "InProgress" => Status::InProgress,
+            _ => {
+                return Err(TicketNewError::ParseStatusErrorOnTicket {
+                    source: ParseStatusError {},
+                })
+            }
+        };
         Ok(Ticket {
             title,
             description,
-            status,
+            status: status_obj,
         })
     }
 }

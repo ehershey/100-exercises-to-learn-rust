@@ -20,18 +20,6 @@ pub enum Status {
     Done,
 }
 
-impl<'a> IntoIterator for &'a TicketStore {
-    type Item = &'a Ticket;
-    type IntoIter = TicketStoreIterator<'a>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        TicketStoreIterator {
-            ticket_store_ref: self,
-            index: 0,
-        }
-    }
-}
-
 pub struct TicketStoreIterator<'a> {
     ticket_store_ref: &'a TicketStore,
     index: usize,

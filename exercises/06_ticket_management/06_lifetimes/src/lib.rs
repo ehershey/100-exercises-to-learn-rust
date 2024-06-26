@@ -20,6 +20,35 @@ pub enum Status {
     Done,
 }
 
+impl<'a> IntoIterator for &'a TicketStore {
+    type Item = &'a Ticket;
+    type IntoIter = TicketStoreIterator<'a>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        TicketStoreIterator {
+            ticket_store_ref: self,
+            index: 0,
+        }
+    }
+}
+
+pub struct TicketStoreIterator<'a> {
+    ticket_store_ref: &'a TicketStore,
+    index: usize,
+}
+
+impl<'a> Iterator for TicketStoreIterator<'a> {
+    type Item = &'a Ticket;
+    fn next(&mut self) -> Option<&'a Ticket> {
+        let result = match self.ticket_store_ref.tickets.get(self.index) {
+            Some(ticket) => ticket,
+            _ => return None,
+        };
+        self.index += 1;
+        Some(result)
+    }
+}
+
 impl TicketStore {
     pub fn new() -> Self {
         Self {

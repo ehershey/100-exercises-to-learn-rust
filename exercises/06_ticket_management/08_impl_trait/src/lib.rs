@@ -22,6 +22,21 @@ pub enum Status {
 }
 
 impl TicketStore {
+    pub fn in_progress(&self) -> impl Iterator<Item = &Ticket> {
+        self.tickets
+            .iter()
+            .filter(|t| t.status == Status::InProgress)
+    }
+
+    pub fn to_dos(&self) -> Vec<&Ticket> {
+        let to_return: Vec<&Ticket> = self
+            .tickets
+            .iter()
+            .filter(|&n| n.status == Status::ToDo)
+            .collect();
+        to_return
+    }
+
     pub fn new() -> Self {
         Self {
             tickets: Vec::new(),

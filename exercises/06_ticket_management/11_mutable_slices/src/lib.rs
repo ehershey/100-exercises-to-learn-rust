@@ -1,6 +1,11 @@
 // TODO: Define a function named `lowercase` that converts all characters in a string to lowercase,
 //  modifying the input in place.
 //  Does it need to take a `&mut String`? Does a `&mut str` work? Why or why not?
+//
+//
+fn lowercase(incoming: &mut str) {
+    incoming.make_ascii_lowercase();
+}
 
 #[cfg(test)]
 mod tests {

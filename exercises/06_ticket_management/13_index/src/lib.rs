@@ -1,4 +1,18 @@
-// TODO: Implement `Index<&TicketId>` and `Index<TicketId>` for `TicketStore`.
+use std::ops::Index;
+
+impl Index<TicketId> for TicketStore {
+    type Output = Ticket;
+    fn index(&self, index: TicketId) -> &Self::Output {
+        self.get(index).unwrap()
+    }
+}
+
+impl Index<&TicketId> for TicketStore {
+    type Output = Ticket;
+    fn index(&self, index: &TicketId) -> &Self::Output {
+        self.get(*index).unwrap()
+    }
+}
 
 use ticket_fields::{TicketDescription, TicketTitle};
 

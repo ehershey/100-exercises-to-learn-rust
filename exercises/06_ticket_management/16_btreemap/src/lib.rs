@@ -16,32 +16,45 @@ pub struct TicketStore {
 #[derive(Clone, Copy, Debug, PartialEq, Ord, Eq, PartialOrd)]
 pub struct TicketId(u64);
 
-impl IntoIterator for TicketStore {
-    type Item = Ticket;
-    // type IntoIter = BTreeMapb:q
-    // type IntoIter = std::vec::IntoIter<Self::Item>;
-    // type IntoIter = <BTreeMap<TicketId, Ticket> as IntoIterator>::IntoIter;
-    //std::collections::BTreeMap<TicketId, Ticket>::IntoIter;
-    // type IntoIter = BTreeMap<TicketId, Ticket>::Values;
-    type IntoIter = std::vec::IntoIter<Self::Item>;
+//impl IntoIterator for TicketStore {
+//type Item = Ticket;
+// type IntoIter = BTreeMapb:q
+// type IntoIter = std::vec::IntoIter<Self::Item>;
+// type IntoIter = <BTreeMap<TicketId, Ticket> as IntoIterator>::IntoIter;
+//std::collections::BTreeMap<TicketId, Ticket>::IntoIter;
+// type IntoIter = BTreeMap<TicketId, Ticket>::Values;
+//type IntoIter = std::vec::IntoIter<Self::Item>;
 
+//fn into_iter(&self) -> Self::IntoIter {
+/* self.tickets
+    .into_values()
+    .collect::<Vec<Ticket>>()
+    .into_iter()
+*/
+/* let tickets = self.tickets;
+let values = tickets.values();
+let collected: Vec<Ticket> = values.collect();
+let toreturn = collected.into_iter();
+toreturn
+    */
+// self.tickets.values().collect().iter()
+// self.tickets.values().collect::<Vec<Ticket>>().into_iter()
+//.into_iter()
+//.map(|t| t)
+//.collect()
+//.into_iter()
+//}
+//}
+
+impl IntoIterator for &TicketStore {
+    type Item = Ticket;
+    type IntoIter = std::vec::IntoIter<Self::Item>;
     fn into_iter(self) -> Self::IntoIter {
         self.tickets
-            .into_values()
+            .values()
+            .cloned()
             .collect::<Vec<Ticket>>()
             .into_iter()
-        /* let tickets = self.tickets;
-        let values = tickets.values();
-        let collected: Vec<Ticket> = values.collect();
-        let toreturn = collected.into_iter();
-        toreturn
-            */
-        // self.tickets.values().collect().iter()
-        // self.tickets.values().collect::<Vec<Ticket>>().into_iter()
-        //.into_iter()
-        //.map(|t| t)
-        //.collect()
-        //.into_iter()
     }
 }
 

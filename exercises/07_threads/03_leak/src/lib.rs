@@ -6,7 +6,42 @@
 use std::thread;
 
 pub fn sum(v: Vec<i32>) -> i32 {
-    todo!()
+    let static_ref = Vec::leak(v);
+
+    let length = static_ref.len();
+
+    if length == 0 {
+        return 0;
+    }
+    if length == 1 {
+        return static_ref[0];
+    }
+    let half = length / 2;
+    println!("length is: {}, half is: {}", length, half);
+    let slice1 = &static_ref[..half - 1];
+    let slice2 = &static_ref[half - 1..];
+
+    let handle1 = std::thread::spawn(move || {
+        let mut sum1: i32 = 0;
+        //for num in static_ref[..(static_ref.len() / 2 - 1)].iter() {
+        for num in slice1 {
+            sum1 += num;
+        }
+        sum1
+    });
+
+    let handle2 = std::thread::spawn(move || {
+        let mut sum2: i32 = 0;
+        for num in slice2 {
+            sum2 += num;
+        }
+        sum2
+    });
+    let sum1 = handle1.join().unwrap();
+    let sum2 = handle2.join().unwrap();
+    println!("sum1 is: {:?}, sum2 is: {:?}", sum1, sum2);
+
+    sum1 + sum2
 }
 
 #[cfg(test)]

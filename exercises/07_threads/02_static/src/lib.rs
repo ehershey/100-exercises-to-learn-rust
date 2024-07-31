@@ -14,9 +14,6 @@ pub fn sum(slice: &'static [i32]) -> i32 {
     }
     let half = length / 2;
     println!("length is: {}, half is: {}", length, half);
-    // let slice1 = slice[..half - 1];
-    // let slice2 = slice[half - 1..];
-    // println!("slice1 is: {:?}, slice2 is: {:?}", slice1, slice2);
 
     let handle1 = std::thread::spawn(move || {
         let mut sum1: i32 = 0;

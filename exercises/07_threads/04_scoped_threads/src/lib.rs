@@ -3,7 +3,39 @@
 //  Don't perform any heap allocation. Don't leak any memory.
 
 pub fn sum(v: Vec<i32>) -> i32 {
-    todo!()
+    let length = v.len();
+
+    if length == 0 {
+        return 0;
+    }
+    if length == 1 {
+        return v[0];
+    }
+    let half = length / 2;
+    println!("length is: {}, half is: {}", length, half);
+    let slice1 = &v[..half - 1];
+    let slice2 = &v[half - 1..];
+
+    let mut sum1: i32 = 0;
+    let mut sum2: i32 = 0;
+    std::thread::scope(|scope| {
+        scope.spawn(|| {
+            for num in slice1 {
+                sum1 += num;
+                println!("summing in first thread");
+            }
+        });
+
+        scope.spawn(|| {
+            for num in slice2 {
+                sum2 += num;
+                println!("summing in second thread");
+            }
+        });
+    });
+    println!("sum1 is: {:?}, sum2 is: {:?}", sum1, sum2);
+
+    sum1 + sum2
 }
 
 #[cfg(test)]

@@ -1,7 +1,6 @@
-// TODO: Convert the implementation to use bounded channels.
 use crate::data::{Ticket, TicketDraft};
 use crate::store::{TicketId, TicketStore};
-use std::sync::mpsc::{Receiver, SendError, Sender, SyncSender, TrySendError};
+use std::sync::mpsc::{Receiver, SendError, SyncSender};
 
 pub mod data;
 pub mod store;
@@ -12,26 +11,28 @@ pub struct TicketStoreClient {
 }
 
 impl TicketStoreClient {
-    pub fn insert(&self, draft: TicketDraft) -> Result<TicketId, &'static str> {
+    pub fn insert(&self, draft: TicketDraft) -> Result<TicketId, SendError<Command>> {
         println!("draft: {:?}", draft);
-        let (response_sender, response_receiver) = std::sync::mpsc::channel();
-        match self.sender.send(Command::Insert {
+        let (response_sender, response_receiver) = std::sync::mpsc::sync_channel(1);
+        self.send(Command::Insert {
             draft,
             response_channel: response_sender,
-        }) {
-            Ok(_) => Ok(response_receiver.recv().unwrap()),
-            Err(_) => Err("Send Error"),
-        }
+        })
+        .unwrap();
+        Ok(response_receiver.recv().unwrap())
     }
 
-    pub fn get(&self, id: TicketId) -> Result<Option<Ticket>, &'static str> {
+    pub fn get(&self, id: TicketId) -> Result<Option<Ticket>, SendError<Command>> {
         println!("id: {:?}", id);
-        let (response_sender, response_receiver) = std::sync::mpsc::channel();
-        let _ = self.sender.send(Command::Get {
+        let (response_sender, response_receiver) = std::sync::mpsc::sync_channel(1);
+        let _ = self.send(Command::Get {
             id,
             response_channel: response_sender,
         });
         Ok(response_receiver.recv().unwrap())
+    }
+    fn send(&self, command: Command) -> Result<(), SendError<Command>> {
+        self.sender.send(command)
     }
 }
 
@@ -41,14 +42,14 @@ pub fn launch(capacity: usize) -> TicketStoreClient {
     TicketStoreClient { sender }
 }
 
-enum Command {
+pub enum Command {
     Insert {
         draft: TicketDraft,
-        response_channel: Sender<TicketId>,
+        response_channel: SyncSender<TicketId>,
     },
     Get {
         id: TicketId,
-        response_channel: Sender<Option<Ticket>>,
+        response_channel: SyncSender<Option<Ticket>>,
     },
 }
 

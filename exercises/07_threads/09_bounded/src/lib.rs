@@ -8,7 +8,7 @@ pub mod store;
 
 #[derive(Clone)]
 pub struct TicketStoreClient {
-    sender: Sender<Command>,
+    sender: SyncSender<Command>,
 }
 
 impl TicketStoreClient {
@@ -34,7 +34,7 @@ impl TicketStoreClient {
 }
 
 pub fn launch(capacity: usize) -> TicketStoreClient {
-    let (sender, receiver) = std::sync::mpsc::channel();
+    let (sender, receiver) = std::sync::mpsc::sync_channel(capacity);
     std::thread::spawn(move || server(receiver));
     TicketStoreClient { sender }
 }

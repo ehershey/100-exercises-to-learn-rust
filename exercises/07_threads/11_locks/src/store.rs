@@ -34,13 +34,18 @@ impl TicketStore {
 
     // The `get` method should return a handle to the ticket
     // which allows the caller to either read or modify the ticket.
-    pub fn get(&self, id: TicketId) -> Option<&Ticket> {
+    pub fn get(&self, id: TicketId) -> Option<Arc<Mutex<Ticket>>> {
         let get_res = self.tickets.get(&id);
         let arc = get_res.unwrap();
-        let lock: &Mutex<Ticket> = &arc;
+        let sendable = Arc::clone(arc);
+        // let data_ref: &Mutex<Ticket> = &arc;
+
+        // Some(sendable)
+        Some(sendable)
+        // let lock: &Mutex<Ticket> = &arc;
 
         // let lock = data_ref.unwrap();
-        let mut guard = lock.lock().unwrap();
-        Some(guard)
+        // let mut guard = lock.lock().unwrap();
+        // Some(guard)
     }
 }

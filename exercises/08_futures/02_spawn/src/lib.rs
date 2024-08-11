@@ -4,7 +4,18 @@ use tokio::net::TcpListener;
 //  Multiple connections (on the same listeners) should be processed concurrently.
 //  The received data should be echoed back to the client.
 pub async fn echoes(first: TcpListener, second: TcpListener) -> Result<(), anyhow::Error> {
-    todo!()
+    loop {
+        let mut conn = first.accept().await.unwrap();
+        let (mut r, mut w) = conn.0.split();
+        let mut whatis = tokio::io::copy(&mut r, &mut w).await.unwrap();
+        println!("whatis: {:?}", whatis);
+        let mut conn = second.accept().await.unwrap();
+        let (mut r, mut w) = conn.0.split();
+        let mut whatis = tokio::io::copy(&mut r, &mut w).await.unwrap();
+        println!("whatis: {:?}", whatis);
+    }
+
+    return Ok(());
 }
 
 #[cfg(test)]

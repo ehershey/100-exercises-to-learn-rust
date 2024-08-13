@@ -10,7 +10,23 @@ where
     // `T` cannot be cloned. How do you share it between the two server tasks?
     T: Display + Send + Sync + 'static,
 {
-    todo!()
+    //let fakeclone = reply.clone();
+    loop {
+        // let replystring = reply.to_string().as_bytes();
+        //let replystring = reply.into_bytes();
+        let mut firstconn = first.accept().await.unwrap();
+        tokio::spawn(async move {
+            let (_r, mut w) = firstconn.0.split();
+            let amt = w.write_all(b"Yo").await;
+            println!("amt: {:?}", amt)
+        });
+        let mut secondconn = second.accept().await.unwrap();
+        tokio::spawn(async move {
+            let (_r, mut w) = secondconn.0.split();
+            let amt = w.write_all(b"Yo").await;
+            println!("amt: {:?}", amt)
+        });
+    }
 }
 
 #[cfg(test)]

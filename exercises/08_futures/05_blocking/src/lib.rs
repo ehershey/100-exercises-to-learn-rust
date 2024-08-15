@@ -4,15 +4,20 @@
 //  Use `spawn_blocking` inside `echo` to resolve the issue.
 use std::io::{Read, Write};
 use tokio::net::TcpListener;
+use tokio::task;
 
 pub async fn echo(listener: TcpListener) -> Result<(), anyhow::Error> {
     loop {
         let (socket, _) = listener.accept().await?;
-        let mut socket = socket.into_std()?;
-        socket.set_nonblocking(false)?;
-        let mut buffer = Vec::new();
-        socket.read_to_end(&mut buffer)?;
-        socket.write_all(&buffer)?;
+        task::spawn_blocking(|| {
+            let mut socket = socket.into_std()?;
+            socket.set_nonblocking(false)?;
+            let mut buffer = Vec::new();
+            socket.read_to_end(&mut buffer)?;
+            socket.write_all(&buffer)
+        })
+        .await
+        .unwrap()?
     }
 }
 
@@ -45,17 +50,21 @@ mod tests {
 
         for request in requests {
             join_set.spawn(async move {
+                println!("in spawned code 1");
                 let mut socket = tokio::net::TcpStream::connect(addr).await.unwrap();
                 let (mut reader, mut writer) = socket.split();
 
                 // Send the request
                 writer.write_all(request.as_bytes()).await.unwrap();
+                println!("sent the request");
                 // Close the write side of the socket
                 writer.shutdown().await.unwrap();
+                println!("shutdown the writer");
 
                 // Read the response
                 let mut buf = Vec::with_capacity(request.len());
                 reader.read_to_end(&mut buf).await.unwrap();
+                println!("read response");
                 assert_eq!(&buf, request.as_bytes());
             });
         }

@@ -6,12 +6,15 @@ use tokio::net::TcpListener;
 
 pub async fn run(listener: TcpListener, n_messages: usize, timeout: Duration) -> Vec<u8> {
     let mut buffer = Vec::new();
-    for _ in 0..n_messages {
+    for num in 0..n_messages {
+        println!("run() - looping over message num: {num}");
         let (mut stream, _) = listener.accept().await.unwrap();
-        let _ = tokio::time::timeout(timeout, async {
+        let res = tokio::time::timeout(timeout, async {
             stream.read_to_end(&mut buffer).await.unwrap();
+            println!("run() - got to end, bugger is: {:?}", buffer);
         })
         .await;
+        println!("run() - end of loop, res was: {:?}", res);
     }
     buffer
 }
@@ -37,8 +40,10 @@ mod tests {
 
             // Send first half
             writer.write_all(beginning.as_bytes()).await.unwrap();
+            println!("ping() - tried to send beginning half: {beginning}");
             tokio::time::sleep(timeout * 2).await;
             writer.write_all(end.as_bytes()).await.unwrap();
+            println!("ping() - tried to send end half: {end}");
 
             // Close the write side of the socket
             let _ = writer.shutdown().await;
@@ -46,6 +51,6 @@ mod tests {
 
         let buffered = handle.await.unwrap();
         let buffered = std::str::from_utf8(&buffered).unwrap();
-        assert_eq!(buffered, "");
+        assert_eq!(buffered, "hefrthta");
     }
 }
